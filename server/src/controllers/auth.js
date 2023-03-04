@@ -1,16 +1,20 @@
-import { createSession } from "../service/auth.js";
 import {
+  createSession,
   createUser,
   findSessions,
   updateSession,
   validateCredential,
 } from "../service/auth.js";
 import { signJwt } from "../utils/jwt.js";
-
 // register
 export async function createUserHandler(req, res) {
   try {
     const user = await createUser(req.body);
+
+    if (!user) {
+      return res.status(409).send("invalid Credential");
+    }
+
     return res.status(201).send(user);
   } catch (e) {
     console.error(e);
@@ -54,10 +58,11 @@ export async function createUserSessionHandler(req, res) {
     return res.json({
       error: [],
       data: {
+        user,
         accessToken,
       },
     });
-  } catch (error) {
+  } catch (e) {
     return res.status(500).send(e.message);
   }
 }

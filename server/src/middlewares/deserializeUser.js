@@ -1,21 +1,23 @@
-import get from "lodash";
-import { UnauthenticatedError } from "../errors/unauthenticated.js";
 import { verifyJwt } from "../utils/jwt.js";
 
 const deserializeUser = async (req, res, next) => {
-  const accessToken = get(req, "headers.authorization", "").replace(
-    /^Bearer\s/,
-    ""
-  );
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith("Bearer")) {
+    console.error("Token not found");
+    return next();
+  }
+  const accessToken = authHeader.split(" ")[1];
 
   if (!accessToken) {
-    throw new UnauthenticatedError("Invalid Token");
+    console.error("Invalid Token");
+    return next();
   }
 
   const { decoded } = verifyJwt(accessToken);
 
   if (!decoded) {
-    throw new UnauthenticatedError("Invalid Token");
+    console.error("Invalid Token");
+    return next();
   }
   res.locals.user = decoded;
   return next();

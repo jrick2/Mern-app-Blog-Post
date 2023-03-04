@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import bcrypt from "bcrypt";
 
 const UserSchema = new mongoose.Schema(
   {
@@ -45,6 +46,9 @@ UserSchema.pre("save", async function (next) {
   try {
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
+
+    this.viewedProfile = Math.floor(Math.random() * 10000);
+    this.impressions = Math.floor(Math.random() * 10000);
 
     return next();
   } catch (error) {

@@ -1,20 +1,24 @@
-import "express-async-errors";
 import dotenv from "dotenv";
 dotenv.config();
 import express from "express";
-import mongoose from "mongoose";
 import bodyParser from "body-parser";
+import mongoose from "mongoose";
 import cors from "cors";
 import multer from "multer";
 import helmet from "helmet";
 import morgan from "morgan";
 import path from "path";
-import router from "./routers/auth.js";
-import { notfound } from "./middlewares/not-found.js";
-import { errorHandlerMiddleware } from "./middlewares/error-handler.js";
 import { fileURLToPath } from "url";
 import { createUserHandler } from "./controllers/auth.js";
-
+import authRoutes from "./routers/auth.js";
+import postRoute from "./routers/post.js";
+import userRoute from "./routers/user.js";
+import deserializeUser from "./middlewares/deserializeUser.js";
+import { requireUser } from "./middlewares/requireUser.js";
+import { createPostHandler } from "./controllers/post.js";
+// import UserModel from "./models/auth/register.js";
+// import PostModel from "./models/post.js";
+// import { posts, users } from "./data/index.js";
 /* CONFIGURATIONS */
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -28,9 +32,6 @@ app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
 app.use(cors());
 app.use("/assets", express.static(path.join(__dirname, "public/assets")));
 
-app.use(notfound);
-app.use(errorHandlerMiddleware);
-
 /* FILE STORAGE */
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -40,22 +41,30 @@ const storage = multer.diskStorage({
     cb(null, file.originalname);
   },
 });
-
 const upload = multer({ storage });
 
-/* ROUTER */
+/* MIDDLEWARE */
+app.use(deserializeUser);
+
+/* ROUTES WITH FILES */
 app.post("/auth/register", upload.single("picture"), createUserHandler);
-app.use(router);
+app.post("/posts", requireUser, upload.single("picture"), createPostHandler);
+app.use("/auth", authRoutes);
+app.use("/posts", postRoute);
+app.use("/users", userRoute);
 
-const port = process.env.PORT || 1111;
+/* MONGOOSE SETUP */
+const PORT = process.env.PORT || 1111;
+mongoose
+  .connect(process.env.DB_URI)
+  .then(() => {
+    app.listen(PORT, () =>
+      console.log(`App is running on http://localhost:${PORT}`)
+    );
 
-app.listen(port, async () => {
-  try {
-    console.log(`App is running at http://localhost:${port}`);
-    mongoose.set("strictQuery", false);
-    await mongoose.connect(process.env.DB_URI);
-    console.log("Connected To DB");
-  } catch (error) {
-    console.error(error, "Failed To Start Server");
-  }
-});
+    /* DUMMY DATA 
+    UserModel.insertMany(users);
+    PostModel.insertMany(posts);
+    */
+  })
+  .catch((error) => console.log(`${error} did not connect`));

@@ -1,5 +1,5 @@
-import UserModel from "../models/register.js";
-import SessionModel from "../models/login.js";
+import UserModel from "../models/auth/register.js";
+import SessionModel from "../models/auth/login.js";
 import omit from "lodash";
 
 // Register
@@ -9,6 +9,7 @@ export async function createUser(input) {
     return omit(user.toJSON(), "password");
   } catch (error) {
     console.error(error.message, "Faild to create User");
+    return res.status(409).send("Email already exists");
   }
 }
 
@@ -26,7 +27,7 @@ export async function validateCredential({ email, password }) {
 
     return omit(user.toJSON(), "password");
   } catch (error) {
-    console.error(error.message, "Invalid Credential");
+    return false;
   }
 }
 
@@ -64,4 +65,8 @@ export async function updateSession(query, update) {
   } catch (error) {
     console.error(error.message);
   }
+}
+
+export async function findUserId(input) {
+  UserModel.findById(input);
 }

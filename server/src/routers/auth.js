@@ -1,6 +1,5 @@
 import express from "express";
 import {
-  createUserHandler,
   createUserSessionHandler,
   deleteSessionHandler,
   getCurrentUser,
@@ -8,18 +7,16 @@ import {
 } from "../controllers/auth.js";
 import { requireUser } from "../middlewares/requireUser.js";
 
-const router = express.Router();
+const routes = express.Router();
 
-router.get("/healthcheck", (req, res) => res.sendStatus(200));
+routes.get("/healthcheck", (req, res) => res.sendStatus(200));
 
-router.post("/api/register", createUserHandler);
+routes.get("/me", requireUser, getCurrentUser);
 
-router.get("/api/me", requireUser, getCurrentUser);
+routes.post("/login", createUserSessionHandler);
 
-router.post("/api/login", createUserSessionHandler);
+routes.get("/login", requireUser, getUserSessionsHandler);
 
-router.get("/api/login", requireUser, getUserSessionsHandler);
+routes.delete("/login", requireUser, deleteSessionHandler);
 
-router.delete("/api/login", requireUser, deleteSessionHandler);
-
-export default router;
+export default routes;
