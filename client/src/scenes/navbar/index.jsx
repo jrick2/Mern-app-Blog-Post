@@ -56,7 +56,7 @@ const Navbar = () => {
             },
           }}
         >
-          Sociopedia
+          Code Abe
         </Typography>
         {isNonMobileScreens && (
           <FlexBetween

@@ -15,10 +15,10 @@ export async function createUserHandler(req, res) {
       return res.status(409).send("invalid Credential");
     }
 
-    return res.status(201).send(user);
+    return res.status(201).json(user);
   } catch (e) {
     console.error(e);
-    return res.status(409).send(e.message);
+    return res.status(409).json(e.message);
   }
 }
 
@@ -26,10 +26,8 @@ export async function createUserHandler(req, res) {
 export async function getCurrentUser(req, res) {
   const user = res.locals.user;
 
-  return res.json({
-    data: {
-      user,
-    },
+  return res.status(200).json({
+    user,
   });
 }
 
@@ -55,15 +53,13 @@ export async function createUserSessionHandler(req, res) {
 
     // return access
 
-    return res.json({
+    return res.status(200).json({
       error: [],
-      data: {
-        user,
-        accessToken,
-      },
+      user,
+      accessToken,
     });
   } catch (e) {
-    return res.status(500).send(e.message);
+    return res.status(500).json(e.message);
   }
 }
 
@@ -72,7 +68,7 @@ export async function getUserSessionsHandler(req, res) {
 
   const sessions = await findSessions({ user: userId, valid: true });
 
-  return res.send(sessions);
+  return res.status(200).json(sessions);
 }
 
 export async function deleteSessionHandler(req, res) {
@@ -80,7 +76,7 @@ export async function deleteSessionHandler(req, res) {
 
   await updateSession({ _id: sessionId }, { valid: false });
 
-  return res.send({
+  return res.status(200).json({
     accessToken: null,
   });
 }
