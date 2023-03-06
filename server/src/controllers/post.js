@@ -58,7 +58,7 @@ export const likedPostHandler = async (req, res) => {
     const { id } = req.params;
     const { userId } = req.body;
 
-    const post = PostModel.findById(id);
+    const post = await PostModel.findById(id);
     const isLiked = post.likes.get(userId);
 
     if (isLiked) {

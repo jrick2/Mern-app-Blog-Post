@@ -12,7 +12,7 @@ export async function createUserHandler(req, res) {
     const user = await createUser(req.body);
 
     if (!user) {
-      return res.status(409).send("invalid Credential");
+      return res.status(409).send("Faild to create User");
     }
 
     return res.status(201).json(user);

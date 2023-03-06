@@ -9,7 +9,6 @@ export async function createUser(input) {
     return omit(user.toJSON(), "password");
   } catch (error) {
     console.error(error.message, "Faild to create User");
-    return res.status(409).send("Email already exists");
   }
 }
 
