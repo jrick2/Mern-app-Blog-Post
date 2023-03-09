@@ -75,6 +75,7 @@ const Form = () => {
 
       if (!savedUserResponse) {
         console.error("Invalid Credential");
+        return null;
       }
       const savedUser = await savedUserResponse.json();
       onSubmitProps.resetForm();
@@ -84,6 +85,7 @@ const Form = () => {
       }
     } catch (e) {
       console.error(e.message, "Could not make request");
+      return alert("Invalid Credential");
     }
   };
 
@@ -97,6 +99,7 @@ const Form = () => {
 
       if (!loggedInResponse) {
         console.error("Invalid Credential");
+        return null;
       }
       const loggedIn = await loggedInResponse.json();
       onSubmitProps.resetForm();
@@ -111,6 +114,7 @@ const Form = () => {
       }
     } catch (e) {
       console.error(e.message, "Could not make request");
+      alert("Invalid Credential");
     }
   };
 
