@@ -7,7 +7,6 @@ import {
   Typography,
   useTheme,
 } from "@mui/material";
-
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import { Formik } from "formik";
 import * as yup from "yup";
@@ -50,71 +49,51 @@ const initialValuesLogin = {
 const Form = () => {
   const [pageType, setPageType] = useState("login");
   const { palette } = useTheme();
-  const navigate = useNavigate();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const isNonMobile = useMediaQuery("(min-width:600px)");
   const isLogin = pageType === "login";
   const isRegister = pageType === "register";
 
   const register = async (values, onSubmitProps) => {
-    try {
-      // this allows us to send form info with image
-      const formData = new FormData();
-      for (let value in values) {
-        formData.append(value, values[value]);
-      }
-      formData.append("picturePath", values.picture.name);
+    // this allows us to send form info with image
+    const formData = new FormData();
+    for (let value in values) {
+      formData.append(value, values[value]);
+    }
+    formData.append("picturePath", values.picture.name);
 
-      const savedUserResponse = await fetch(
-        "http://localhost:1111/auth/register",
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
-
-      if (!savedUserResponse) {
-        console.error("Invalid Credential");
-        return null;
+    const savedUserResponse = await fetch(
+      "http://localhost:1111/auth/register",
+      {
+        method: "POST",
+        body: formData,
       }
-      const savedUser = await savedUserResponse.json();
-      onSubmitProps.resetForm();
+    );
+    const savedUser = await savedUserResponse.json();
+    onSubmitProps.resetForm();
 
-      if (savedUser) {
-        setPageType("login");
-      }
-    } catch (e) {
-      console.error(e.message, "Could not make request");
-      return alert("Invalid Credential");
+    if (savedUser) {
+      setPageType("login");
     }
   };
 
   const login = async (values, onSubmitProps) => {
-    try {
-      const loggedInResponse = await fetch("http://localhost:1111/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values),
-      });
-
-      if (!loggedInResponse) {
-        console.error("Invalid Credential");
-        return null;
-      }
-      const loggedIn = await loggedInResponse.json();
-      onSubmitProps.resetForm();
-      if (loggedIn) {
-        dispatch(
-          setLogin({
-            user: loggedIn.user,
-            accessToken: loggedIn.accessToken,
-          })
-        );
-        navigate("/home");
-      }
-    } catch (e) {
-      console.error(e.message, "Could not make request");
-      alert("Invalid Credential");
+    const loggedInResponse = await fetch("http://localhost:1111/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(values),
+    });
+    const loggedIn = await loggedInResponse.json();
+    onSubmitProps.resetForm();
+    if (loggedIn) {
+      dispatch(
+        setLogin({
+          user: loggedIn.user,
+          token: loggedIn.token,
+        })
+      );
+      navigate("/home");
     }
   };
 

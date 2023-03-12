@@ -1,5 +1,5 @@
-import { Box, Typography, useMediaQuery, useTheme } from "@mui/material";
-import Form from "./form";
+import { Box, Typography, useTheme, useMediaQuery } from "@mui/material";
+import Form from "./Form";
 
 const LoginPage = () => {
   const theme = useTheme();
@@ -13,7 +13,7 @@ const LoginPage = () => {
         textAlign="center"
       >
         <Typography fontWeight="bold" fontSize="32px" color="primary">
-          Code Abe
+          Sociopedia
         </Typography>
       </Box>
 
