@@ -4,6 +4,7 @@ import UserModel from "../models/auth/register.js";
 export const getUserHandler = async (req, res) => {
   try {
     const { id } = req.params;
+
     const user = await UserModel.findById(id);
     res.status(200).json(user);
   } catch (err) {
